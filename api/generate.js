@@ -1,4 +1,9 @@
 export default async function handler(req, res) {
+  // 👇 ये लाइन ADD करनी है (important)
+  if (req.method === "GET") {
+    return res.status(200).json({ message: "API working ✅" });
+  }
+
   try {
     const { prompt } = req.body;
 
