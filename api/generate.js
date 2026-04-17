@@ -20,11 +20,15 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
+    if (!response.ok) {
+      return res.status(500).json({ error: data });
+    }
+
     res.status(200).json({
-      result: data.content[0].text
+      result: data?.content?.[0]?.text || "No response"
     });
 
   } catch (error) {
-    res.status(500).json({ error: "Something went wrong" });
+    res.status(500).json({ error: error.message });
   }
 }
