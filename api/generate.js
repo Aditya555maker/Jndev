@@ -1,37 +1,37 @@
-import Anthropic from "@anthropic-ai/sdk";
-
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Only POST allowed" });
   }
 
-  const { prompt } = req.body || {};
-  if (!prompt) {
-    return res.status(400).json({ error: "Prompt missing" });
-  }
-
   try {
-    const client = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY,
+    const { prompt } = req.body;
+
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.ANTHROPIC_API_KEY,
+        "anthropic-version": "2023-06-01"
+      },
+      body: JSON.stringify({
+        model: "claude-3-sonnet-20240229",
+        max_tokens: 1000,
+        messages: [
+          {
+            role: "user",
+            content: `Create a full HTML website for: ${prompt}`
+          }
+        ]
+      })
     });
 
-    const msg = await client.messages.create({
-      model: "claude-3-sonnet-20240229",
-      max_tokens: 2000,
-      messages: [
-        {
-          role: "user",
-          content: `Create a full HTML website for: ${prompt}`,
-        },
-      ],
+    const data = await response.json();
+
+    return res.status(200).json({
+      html: data?.content?.[0]?.text || JSON.stringify(data)
     });
 
-    const html = msg.content[0].text;
-
-    res.status(200).json({ html });
-
-  } catch (e) {
-    res.status(500).json({ error: e.message });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
   }
 }
-// update
