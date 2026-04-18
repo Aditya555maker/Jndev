@@ -1,13 +1,9 @@
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
-
-  const { prompt } = req.body;
-
   try {
+    const { prompt } = req.body;
+
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${process.env.GEMINI_API_KEY}`,
       {
         method: "POST",
         headers: {
@@ -25,11 +21,10 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-    const text =
-      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "No response";
+    const result =
+      data.candidates?.[0]?.content?.parts?.[0]?.text || "No response";
 
-    res.status(200).json({ result: text });
+    res.status(200).json({ result });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
