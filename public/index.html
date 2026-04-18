@@ -5,39 +5,32 @@
 </head>
 <body>
 
-<h1>AI Website Generator</h1>
+  <h1>AI Website Generator</h1>
 
-<input id="prompt" placeholder="Enter idea..." />
-<button onclick="generate()">Generate Website</button>
+  <input type="text" id="input" placeholder="Enter idea..." />
+  <button onclick="generateWebsite()">Generate Website</button>
 
-<pre id="output"></pre>
+  <pre id="output"></pre>
 
-<script>
-async function generate() {
-  const prompt = document.getElementById("prompt").value;
+  <script>
+    async function generateWebsite() {
+      const input = document.getElementById("input").value;
 
-  const res = await fetch("/api/generate", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ prompt }),
-  });
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt: input,
+        }),
+      });
 
-  const data = await res.json();
+      const data = await res.json();
 
-  document.getElementById("output").innerText = data.result || JSON.stringify(data);
-}
-</script>
+      document.getElementById("output").innerText = data.result;
+    }
+  </script>
 
 </body>
 </html>
-fetch("/api/generate", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    prompt: inputValue
-  }),
-})
